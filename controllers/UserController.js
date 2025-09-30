@@ -138,40 +138,6 @@ export const refreshToken = async (req, res) => {
   }
 };
 
-// export const refreshToken = async (req, res) => {
-//   const token = req.cookies.refreshToken;
-//   if (!token) return res.status(401).json({ message: 'No refresh token, please login' });
-
-//   try {
-//     const session = await userSession.findOne({ refreshToken: token });
-//     session.refreshToken = newRefreshToken;
-//     await session.save();
-
-//     if (!session) return res.status(403).json({ message: 'Invalid session' });
-//     const decoded = jwt.verify(token, process.env.JWT_REFRESH_TOKEN);
-//     const { accessToken, refreshToken: newRefreshToken } = generateTokens({ 
-//         id: decoded.id, 
-//         email: decoded.email 
-//     });
-
-//     // Replace old refresh token with new one
-//     session.refreshToken = newRefreshToken;
-//     await session.save();
-
-//     // Rotate refresh token
-//     res.cookie('refreshToken', newRefreshToken, {
-//       httpOnly: true,
-//       secure: false,
-//       sameSite: 'strict',
-//       maxAge: 7 * 24 * 60 * 60 * 1000
-//     });
-
-//     res.json({ accessToken });
-//   } catch (err) {
-//     res.status(403).json({ message: 'Invalid or expired refresh token' });
-//   }
-// };
-
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
