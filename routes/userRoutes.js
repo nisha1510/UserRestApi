@@ -1,6 +1,6 @@
 import express from 'express';
 import * as userController from '../controllers/UserController.js';
-import { verifyToken } from '../middleware/authMiddleware';
+import { verifyToken } from '../middleware/authMiddleware.js';
 import { validatePayload } from '../middleware/validatePayload.js';
 import { signupSchema, loginSchema, updateUserSchema } from "../validators/userValidator.js";
 
@@ -17,3 +17,6 @@ router.put("/:id", verifyToken, validatePayload(updateUserSchema), userControlle
 router.delete('/:id', verifyToken, userController.deleteUser);
 
 export default router;
+
+
+

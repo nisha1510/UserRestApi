@@ -6,7 +6,7 @@ import User from '../models/User.js';
 import Password from '../models/Password.js';
 import userSession from '../models/userSession.js';
 
-
+//Token Generation
 const generateTokens = (payload) => {
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
   const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
@@ -16,6 +16,7 @@ const generateTokens = (payload) => {
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
+    //check if user already exist
     const existingUser = await User.findOne({ 
         email 
     });
@@ -23,22 +24,27 @@ export const signup = async (req, res) => {
         message: 'User already exists' 
     });
 
+    //create new user entry
     const id = uuid();
     const newUser = new User({ 
         id, fullName, email 
     });
     await newUser.save();
 
+    //Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     const newPassword = new Password({ 
         userId: id, hashedPassword 
     });
     await newPassword.save();
 
+    //Generate token
     const { accessToken, refreshToken } = generateTokens({ id, email });
     
+    //save refresh token in DB
     await userSession.create({ userId: id, refreshToken });
     
+    //also send refresh token as cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: false, 
@@ -58,7 +64,6 @@ export const signup = async (req, res) => {
     });
   }
 };
-
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
